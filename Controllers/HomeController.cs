@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,17 +30,37 @@ namespace TestMVC.Controllers
 			_logger.LogInformation("Выполнение метода AddFile");
 			if (file != null)
 			{
-				_logger.LogInformation("Файл имеет размер {0}",file.Length);
+				_logger.LogInformation("Файл имеет размер {0}", file.Length);
 
-				var filePath = Path.GetTempFileName();
-				_logger.LogInformation("Файл сохраняем {0}", filePath);
 
-				using (var stream = new FileStream(filePath, FileMode.Create))
+				byte[] img = new byte[file.Length];
+				using (var stream = new MemoryStream(img))
+				{
+					await file.CopyToAsync(stream);
+					_logger.LogInformation("Записали поток в MemoryStream");
+					try
+					{
+						_logger.LogInformation("Создаем Bitmap image");
+						Bitmap bitmap = new Bitmap(stream);
+						_logger.LogInformation("Bitmap image создан");
+
+						bitmap.Save("wwwroot/i1.jpg");
+						_logger.LogInformation("Файл сохранен");
+					}
+					catch (Exception e)
+					{
+						_logger.LogInformation("Bitmap image не создан");
+						_logger.LogInformation(e.Message);
+					}
+				}
+
+				/*
+				using (var stream = new FileStream("wwwroot/i.jpg", FileMode.Create))
 				{
 					await file.CopyToAsync(stream);
 				}
-
-				_logger.LogInformation("Файл сохранен");
+				*/
+				
 			}
 			else
 				_logger.LogInformation("Файл не существует");
