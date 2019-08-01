@@ -32,7 +32,6 @@ namespace TestMVC.Controllers
 			{
 				_logger.LogInformation("Файл имеет размер {0}", file.Length);
 
-
 				byte[] img = new byte[file.Length];
 				using (var stream = new MemoryStream(img))
 				{
@@ -41,11 +40,20 @@ namespace TestMVC.Controllers
 					try
 					{
 						_logger.LogInformation("Создаем Bitmap image");
-						Bitmap bitmap = new Bitmap(stream);
-						_logger.LogInformation("Bitmap image создан");
+						using (Bitmap bitmap = new Bitmap(stream))
+						{
+							_logger.LogInformation("Bitmap image создан");
 
-						bitmap.Save("wwwroot/i1.jpg");
-						_logger.LogInformation("Файл сохранен");
+							Bitmap bmnew = Watermark.WaterMarkToImage(bitmap, "test text");
+
+							if (bmnew != null && !bmnew.Size.IsEmpty)
+							{
+								bmnew.Save("wwwroot/i2.jpg");
+								_logger.LogInformation("Файл сохранен");
+							}
+							else
+								_logger.LogInformation("Ошибка обработки Watermark");
+						}
 					}
 					catch (Exception e)
 					{
@@ -53,14 +61,6 @@ namespace TestMVC.Controllers
 						_logger.LogInformation(e.Message);
 					}
 				}
-
-				/*
-				using (var stream = new FileStream("wwwroot/i.jpg", FileMode.Create))
-				{
-					await file.CopyToAsync(stream);
-				}
-				*/
-				
 			}
 			else
 				_logger.LogInformation("Файл не существует");
