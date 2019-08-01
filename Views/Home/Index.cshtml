@@ -1,0 +1,26 @@
+﻿@{
+	ViewData["Title"] = "Home Page";
+}
+
+
+<div id="myId" class="dropzone"></div>
+
+@section Scripts
+{
+	<script src="~/js/dropzone.js"></script>
+	<script>
+		var myDropzone = new Dropzone("div#myId",
+			{
+				url: "/Home/AddFile",
+				acceptedFiles: "image/*,.jpeg,.png,.jpg",
+				maxFilesize: 2,
+				addRemoveLinks: true,
+			})
+			.on("complete", function (file) {
+				
+			})
+			.on("removedfile", function (file) {
+				myDropzone.removeFile(file);
+			});
+	</script>
+}
