@@ -19,12 +19,12 @@ namespace TestMVC.Controllers
 		{
 			this._logger = _logger;
 		}
+		// Загрузка файла
 		public IActionResult Index()
 		{
 			return View();
 		}
-
-		[HttpPost]
+	    [HttpPost]
 		public async Task<IActionResult> AddFile(IFormFile file)
 		{
 			_logger.LogInformation("Выполнение метода AddFile");
